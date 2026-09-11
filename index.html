@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卂丂ㄒ卂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<video id="backgroundVideo" src="assets/background.mp4" autoplay muted loop playsinline preload="metadata"></video>
+<canvas id="particles"></canvas>
+<div class="ink-frame"></div>
+<div id="cursorGlow">
+  <div class="reticle-ring"></div>
+  <div class="reticle-cross"></div>
+  <div class="reticle-dot"></div>
+</div>
+<div id="impactLayer"></div>
+<div id="hud">
+  <span class="hud-label">// STATUS:</span>
+  <span id="hudText"></span><span class="cursor"></span>
+</div>
+<div id="viewCounter"><span class="vc-icon">◉</span> <span id="vcCount">0</span> views</div>
+
+<audio id="bgAudio" src="assets/theme.mp3" loop></audio>
+
+<div id="musicPlayer" style="display:none;">
+  <button class="mp-toggle" id="mpToggle" aria-label="Play or pause music">❚❚</button>
+  <div class="mp-info">
+    <div class="mp-title">theme.mp3</div>
+    <div class="mp-track" id="mpTrack"><div class="mp-track-fill" id="mpFill"></div></div>
+  </div>
+  <div class="mp-time"><span id="mpCurrent">0:00</span> / <span id="mpDuration">0:00</span></div>
+</div>
+
+<main id="site" style="display:none;">
+
+  <section class="hero">
+    <div class="avatar-col" id="avatarCol">
+      <div class="avatar-wrap">
+        <video class="avatar" src="assets/avatar.mp4?v=2" autoplay muted loop playsinline preload="metadata"></video>
+        <div class="presence idle" id="presenceDot"><div class="presence-core"></div></div>
+      </div>
+    </div>
+    <div class="text-col">
+      <h1 class="name" id="nameText" data-text="卂丂ㄒ卂">卂丂ㄒ卂</h1>
+      <p class="role" id="roleText">building cool stuff 🌐</p>
+    </div>
+  </section>
+
+  <button id="scrollCue" aria-label="Scroll down">
+    <span class="scroll-track"><span class="scroll-dot"></span></span>
+    <span class="scroll-label">scroll</span>
+  </button>
+
+  <div class="socials">
+    <a href="https://www.instagram.com/gaby_puri_73" target="_blank" rel="noopener" aria-label="Instagram" class="social-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+    </a>
+    <a href="https://discordapp.com/users/1354472117646786763" target="_blank" rel="noopener" aria-label="Discord" class="social-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 9c2.5-1 5.5-1 8 0M7 15c3 1.2 7 1.2 10 0M9 11.2c.4 0 .7.4.7.9s-.3.9-.7.9-.7-.4-.7-.9.3-.9.7-.9zM15 11.2c.4 0 .7.4.7.9s-.3.9-.7.9-.7-.4-.7-.9.3-.9.7-.9z"/><path d="M6.5 6.8C4.8 9 4 12.5 4.3 16c1.3 1.1 3 1.8 4.7 2l.7-1.3M17.5 6.8c1.7 2.2 2.5 5.7 2.2 9.2-1.3 1.1-3 1.8-4.7 2l-.7-1.3"/></svg>
+    </a>
+    <a href="https://www.youtube.com/@InkBlitzRecaps" target="_blank" rel="noopener" aria-label="YouTube" class="social-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M11 9.8l4 2.2-4 2.2z" fill="currentColor" stroke="none"/></svg>
+    </a>
+  </div>
+
+  <section class="section" data-reveal id="skillsSection">
+    <div class="section-head"><span class="path">// skills</span></div>
+    <div class="terminal" id="terminal">
+      <div class="terminal-body" id="terminalBody"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="path">// contact</span>
+    <p>Reach out on any of the socials above.</p>
+  </footer>
+
+</main>
+
+<div id="enter-overlay" role="dialog" aria-label="Welcome" aria-modal="true">
+  <div class="enter-overlay__content">
+    <h1 data-text="WELCOME TO THE GOAT PROFILE">WELCOME TO THE GOAT PROFILE</h1>
+    <p>CLICK ANYWHERE TO ENTER</p>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const overlay = document.getElementById('enter-overlay');
+    if (!overlay) return;
+
+    overlay.addEventListener('click', () => {
+      overlay.style.pointerEvents = 'none';
+      overlay.classList.add('is-hidden');
+      document.querySelectorAll('audio').forEach((audio) => {
+        audio.play().catch(() => {});
+      });
+
+      document.dispatchEvent(new Event('portfolio:enter'));
+    }, { once: true });
+  })();
+</script>
+
+<script src="js/main.js"></script>
+</body>
+</html>
