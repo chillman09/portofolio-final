@@ -25,6 +25,52 @@
 </div>
 <div id="viewCounter"><span class="vc-icon">◉</span> <span id="vcCount">0</span> views</div>
 
+<button id="hireBtn" aria-haspopup="dialog" aria-controls="hireModal">
+  <span class="hire-dot"></span>HIRE ME
+</button>
+
+<div id="hireModal" class="hire-overlay" role="dialog" aria-modal="true" aria-labelledby="hireModalTitle" hidden>
+  <div class="hire-modal">
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+    <div class="hire-head">
+      <h2 id="hireModalTitle" class="hire-title" data-text="// COMMISSION_INQUIRY">// COMMISSION_INQUIRY</h2>
+      <button class="hire-close" id="hireClose" aria-label="Close">✕</button>
+    </div>
+
+    <form id="hireForm" novalidate>
+      <label class="hire-field">
+        <span class="hire-label">project_type</span>
+        <select id="hireType" name="projectType">
+          <option value="Web Development">Web Development</option>
+          <option value="Discord Bot">Discord Bot</option>
+          <option value="Minecraft Plugin / Server">Minecraft Plugin / Server</option>
+          <option value="Automation / Scripting">Automation / Scripting</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label class="hire-field">
+        <span class="hire-label">contact <em>discord tag or email</em></span>
+        <input type="text" id="hireContact" name="contact" placeholder="user#0000 or you@email.com" required maxlength="200">
+      </label>
+
+      <label class="hire-field">
+        <span class="hire-label">project_details</span>
+        <textarea id="hireDetails" name="details" rows="4" placeholder="What do you need built? Scope, timeline, budget if you have one..." required maxlength="1500"></textarea>
+      </label>
+
+      <input type="text" id="hireHp" name="hp" class="hire-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <button type="submit" class="hire-submit" id="hireSubmit">
+        <span class="hire-submit-label">SEND_REQUEST</span>
+      </button>
+
+      <p class="hire-status" id="hireStatus" role="status"></p>
+    </form>
+  </div>
+</div>
+
 <audio id="bgAudio" src="assets/misery.mp3" loop></audio>
 
 <main id="site" style="display:none;">

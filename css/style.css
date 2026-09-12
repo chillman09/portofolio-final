@@ -674,6 +674,139 @@ main { position: relative; z-index: 2; }
 
 @keyframes enter-overlay-pulse { 0%, 100% { opacity: 0.58; } 50% { opacity: 0.92; } }
 
+/* ---------- Hire Me trigger ---------- */
+#hireBtn {
+  position: fixed; top: 26px; right: 28px; z-index: 30;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: var(--paper);
+  background: linear-gradient(180deg, rgba(24,24,24,0.9), rgba(8,8,8,0.95));
+  border: 1px solid rgba(200,30,44,0.5);
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.6), 0 0 16px rgba(200,30,44,0.15);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+}
+#hireBtn:hover { border-color: var(--red); box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.6), 0 0 26px rgba(200,30,44,0.35); transform: translateY(-1px); }
+#hireBtn:active { transform: translateY(0); }
+.hire-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+  box-shadow: 0 0 6px 2px rgba(200,30,44,0.8);
+  animation: mpPulse 1.4s ease-in-out infinite;
+}
+@media (max-width: 640px) { #hireBtn { top: 16px; right: 16px; padding: 8px 12px; font-size: 10px; } }
+
+/* ---------- Hire modal ---------- */
+.hire-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: rgba(4,4,4,0.72);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.hire-overlay[hidden] { display: none; }
+.hire-overlay.open { opacity: 1; }
+
+.hire-modal {
+  position: relative;
+  width: min(460px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(20,20,20,0.97), rgba(6,6,6,0.99));
+  border: 1px solid rgba(200,30,44,0.45);
+  border-radius: 10px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(200,30,44,0.15);
+  transform: scale(0.94) translateY(8px);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+}
+.hire-overlay.open .hire-modal { transform: scale(1) translateY(0); opacity: 1; }
+
+.hire-modal .corner { width: 18px; height: 18px; border-color: rgba(200,30,44,0.7); }
+
+.hire-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.hire-title {
+  position: relative; display: inline-block;
+  font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: 1px;
+  color: var(--paper); margin: 0;
+}
+.hire-title::before {
+  content: attr(data-text); position: absolute; left: 0; top: 0; z-index: -1;
+  color: var(--red); transform: translate(2px, 2px); opacity: 0.7;
+}
+.hire-close {
+  flex-shrink: 0; width: 26px; height: 26px; border: 1px solid rgba(242,239,230,0.2); border-radius: 4px;
+  background: transparent; color: var(--muted); cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.hire-close:hover { color: var(--red); border-color: var(--red); transform: rotate(90deg); }
+
+.hire-field { display: block; margin-bottom: 18px; }
+.hire-label {
+  display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 8px;
+}
+.hire-label em { color: #7a756b; font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0.2px; margin-left: 6px; }
+
+.hire-field input[type="text"],
+.hire-field select,
+.hire-field textarea {
+  width: 100%; font-family: var(--body); font-size: 13.5px; color: var(--paper);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(242,239,230,0.16);
+  border-radius: 6px; padding: 11px 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  resize: vertical;
+}
+.hire-field textarea { min-height: 96px; line-height: 1.5; }
+.hire-field input::placeholder, .hire-field textarea::placeholder { color: #6E695F; }
+.hire-field input:focus, .hire-field select:focus, .hire-field textarea:focus {
+  outline: none; border-color: var(--red); background: rgba(200,30,44,0.05);
+  box-shadow: 0 0 0 3px rgba(200,30,44,0.12);
+}
+.hire-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C81E2C' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+
+.hire-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
+
+.hire-submit {
+  position: relative; overflow: hidden;
+  width: 100%; margin-top: 4px;
+  font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: 2px;
+  color: var(--paper); background: var(--red);
+  border: none; border-radius: 6px; padding: 13px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(200,30,44,0.35);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.hire-submit:hover { background: #e23548; box-shadow: 0 0 28px rgba(200,30,44,0.5); }
+.hire-submit:active { transform: scale(0.98); }
+.hire-submit:disabled { cursor: not-allowed; opacity: 0.7; }
+.hire-submit::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: translateX(-120%);
+}
+.hire-submit:hover::after { animation: hireSheen 1s ease; }
+@keyframes hireSheen { to { transform: translateX(120%); } }
+
+.hire-status {
+  margin: 14px 0 0; min-height: 16px;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.5px; text-align: center;
+}
+.hire-status.error { color: var(--red); }
+.hire-status.success { color: #4ADE80; }
+
+@media (max-width: 640px) { .hire-modal { padding: 24px 20px 20px; } }
+
 @media (prefers-reduced-motion: reduce) {
   #enter-overlay p { animation: none; }
   .presence.online .presence-core, .audio-dot { animation: none; }

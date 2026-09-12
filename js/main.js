@@ -215,6 +215,96 @@ function formatMMSS(sec) {
   return `${m}:${s}`;
 }
 
+// ---------- Hire Me modal ----------
+const hireBtn = document.getElementById('hireBtn');
+const hireModal = document.getElementById('hireModal');
+const hireClose = document.getElementById('hireClose');
+const hireForm = document.getElementById('hireForm');
+const hireSubmit = document.getElementById('hireSubmit');
+const hireStatus = document.getElementById('hireStatus');
+const hireSubmitLabel = hireSubmit ? hireSubmit.querySelector('.hire-submit-label') : null;
+
+let hireLastFocused = null;
+
+function openHireModal() {
+  hireLastFocused = document.activeElement;
+  hireModal.hidden = false;
+  requestAnimationFrame(() => hireModal.classList.add('open'));
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('hireType')?.focus(), 260);
+  document.addEventListener('keydown', onHireKeydown);
+}
+
+function closeHireModal() {
+  hireModal.classList.remove('open');
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', onHireKeydown);
+  setTimeout(() => {
+    hireModal.hidden = true;
+    if (hireLastFocused) hireLastFocused.focus();
+  }, 260);
+}
+
+function onHireKeydown(e) {
+  if (e.key === 'Escape') closeHireModal();
+}
+
+if (hireBtn) hireBtn.addEventListener('click', openHireModal);
+if (hireClose) hireClose.addEventListener('click', closeHireModal);
+if (hireModal) {
+  hireModal.addEventListener('click', (e) => {
+    if (e.target === hireModal) closeHireModal();
+  });
+}
+
+function setHireStatus(text, kind) {
+  if (!hireStatus) return;
+  hireStatus.textContent = text;
+  hireStatus.className = 'hire-status' + (kind ? ' ' + kind : '');
+}
+
+if (hireForm) {
+  hireForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const contact = document.getElementById('hireContact').value.trim();
+    const details = document.getElementById('hireDetails').value.trim();
+    const projectType = document.getElementById('hireType').value;
+    const hp = document.getElementById('hireHp').value;
+
+    if (!contact || !details) {
+      setHireStatus('Fill in your contact info and project details.', 'error');
+      return;
+    }
+
+    hireSubmit.disabled = true;
+    setHireStatus('', '');
+    if (hireSubmitLabel) hireSubmitLabel.textContent = 'TRANSMITTING...';
+
+    try {
+      const res = await fetch('/api/hire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectType, contact, details, hp })
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        if (hireSubmitLabel) hireSubmitLabel.textContent = 'REQUEST_SENT ✓';
+        setHireStatus('Got it — I\u2019ll get back to you soon.', 'success');
+        hireForm.reset();
+        setTimeout(closeHireModal, 1800);
+      } else {
+        throw new Error(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      if (hireSubmitLabel) hireSubmitLabel.textContent = 'SEND_REQUEST';
+      hireSubmit.disabled = false;
+      setHireStatus('Failed to send — try again, or hit up a social link above.', 'error');
+    }
+  });
+}
+
 // ---------- Volume popover ----------
 const mpVolWrap = document.querySelector('.mp-vol-wrap');
 
@@ -395,7 +485,7 @@ const PROJECT_DATA = [
     name: 'Minecraft AFK Bot + Web UI',
     desc: 'A Minecraft AFK bot with a full web dashboard to control it — start/stop, view status, and manage settings from the browser instead of the terminal.',
     tags: ['node.js', 'mineflayer', 'web ui'],
-    link: 'https://github.com/chillman09/afk-bot-.git'
+    link: 'https://github.com/chillman09/minecraft-afk-bot'
   }
 ];
 
