@@ -9,6 +9,12 @@ const mpFill = document.getElementById('mpFill');
 const mpTrack = document.getElementById('mpTrack');
 const mpCurrent = document.getElementById('mpCurrent');
 const mpDuration = document.getElementById('mpDuration');
+const mpDisc = document.getElementById('mpDisc');
+const mpEq = document.getElementById('mpEq');
+const mpVolBtn = document.getElementById('mpVolBtn');
+const mpVolPop = document.getElementById('mpVolPop');
+const mpVolSlider = document.getElementById('mpVolSlider');
+const TARGET_VOLUME = 0.6;
 
 document.addEventListener('portfolio:enter', enterSite, { once: true });
 
@@ -16,12 +22,13 @@ function enterSite() {
   bgVideo.play().catch(() => {});
   bgAudio.volume = 0;
   bgAudio.play().catch(() => {});
+  setupAudioReactivity();
 
   let vol = 0;
   const fadeIn = setInterval(() => {
     vol += 0.05;
-    if (vol >= 0.6) {
-      vol = 0.6;
+    if (vol >= TARGET_VOLUME) {
+      vol = TARGET_VOLUME;
       clearInterval(fadeIn);
     }
     bgAudio.volume = vol;
@@ -159,16 +166,30 @@ function bumpViewCounter() {
 // ---------- Music Player ----------
 let mpPlaying = true;
 
-mpToggle.addEventListener('click', () => {
-  mpPlaying = !mpPlaying;
-  if (mpPlaying) {
-    bgAudio.play().catch(() => {});
-    mpToggle.textContent = '❚❚';
-  } else {
-    bgAudio.pause();
-    mpToggle.textContent = '▶';
+const mpPlayIcon = document.querySelector('.mp-icon-play');
+const mpPauseIcon = document.querySelector('.mp-icon-pause');
+
+function setPlayerState(playing) {
+  mpPlaying = playing;
+  musicPlayer.classList.toggle('paused', !playing);
+  if (mpPlayIcon && mpPauseIcon) {
+    mpPlayIcon.hidden = playing;
+    mpPauseIcon.hidden = !playing;
   }
-});
+}
+
+function togglePlayback() {
+  if (mpPlaying) {
+    bgAudio.pause();
+    setPlayerState(false);
+  } else {
+    bgAudio.play().catch(() => {});
+    setPlayerState(true);
+  }
+}
+
+mpToggle.addEventListener('click', togglePlayback);
+if (mpDisc) mpDisc.addEventListener('click', togglePlayback);
 
 bgAudio.addEventListener('loadedmetadata', () => {
   mpDuration.textContent = formatMMSS(bgAudio.duration);
@@ -192,6 +213,72 @@ function formatMMSS(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
+}
+
+// ---------- Volume popover ----------
+const mpVolWrap = document.querySelector('.mp-vol-wrap');
+
+if (mpVolBtn && mpVolWrap && mpVolSlider) {
+  mpVolSlider.value = Math.round(TARGET_VOLUME * 100);
+
+  mpVolBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mpVolWrap.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!mpVolWrap.contains(e.target)) mpVolWrap.classList.remove('open');
+  });
+
+  mpVolSlider.addEventListener('input', () => {
+    bgAudio.volume = mpVolSlider.value / 100;
+  });
+}
+
+// ---------- Reactive EQ (Web Audio API) ----------
+let audioCtx, analyser, freqData, eqBars, reactivityLive = false;
+
+function setupAudioReactivity() {
+  if (audioCtx) {
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    return;
+  }
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctx();
+    const source = audioCtx.createMediaElementSource(bgAudio);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    analyser.smoothingTimeConstant = 0.75;
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+    eqBars = mpEq ? [...mpEq.querySelectorAll('span')] : [];
+    if (mpEq) mpEq.classList.remove('css-fallback');
+    reactivityLive = true;
+    drawEq();
+  } catch (err) {
+    // Web Audio unavailable/blocked — fall back to the canned CSS pulse animation
+    if (mpEq) mpEq.classList.add('css-fallback');
+  }
+}
+
+function drawEq() {
+  if (!reactivityLive) return;
+  requestAnimationFrame(drawEq);
+  if (!analyser || musicPlayer.classList.contains('paused')) return;
+
+  analyser.getByteFrequencyData(freqData);
+  const bucketSize = Math.floor(freqData.length / eqBars.length);
+
+  eqBars.forEach((bar, i) => {
+    let sum = 0;
+    const start = i * bucketSize;
+    for (let j = start; j < start + bucketSize; j++) sum += freqData[j];
+    const avg = sum / bucketSize;
+    const pct = Math.max(12, Math.min(100, (avg / 255) * 100 * 1.3));
+    bar.style.height = pct + '%';
+  });
 }
 
 // ---------- Reticle Cursor ----------
@@ -302,6 +389,119 @@ const SKILL_DATA = [
   { type: 'skill', label: 'self-hosted infra', level: 100, tag: 'expert' },
 ];
 
+// ---------- Projects ----------
+const PROJECT_DATA = [
+  {
+    name: 'Minecraft AFK Bot + Web UI',
+    desc: 'A Minecraft AFK bot with a full web dashboard to control it — start/stop, view status, and manage settings from the browser instead of the terminal.',
+    tags: ['node.js', 'mineflayer', 'web ui'],
+    link: 'https://github.com/chillman09/afk-bot-.git'
+  }
+];
+
+const SCRAMBLE_CHARS = '!<>-_\\/[]{}—=+*^?#$%&01';
+
+function scrambleReveal(el, finalText, delayMs) {
+  el.setAttribute('data-text', finalText);
+  const len = finalText.length;
+  const revealFrame = 2; // frames per character lock-in
+  const totalFrames = len * revealFrame + 10;
+  let frame = 0;
+
+  function tick() {
+    let out = '';
+    for (let i = 0; i < len; i++) {
+      const lockFrame = i * revealFrame;
+      if (frame >= lockFrame + 8) {
+        out += finalText[i];
+      } else if (frame >= lockFrame) {
+        out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      } else {
+        out += '\u00A0';
+      }
+    }
+    el.textContent = out;
+    frame++;
+    if (frame <= totalFrames) {
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = finalText;
+    }
+  }
+
+  setTimeout(() => requestAnimationFrame(tick), delayMs);
+}
+
+let projectsRendered = false;
+
+function renderProjects() {
+  if (projectsRendered) return;
+  projectsRendered = true;
+
+  const grid = document.getElementById('projectsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  PROJECT_DATA.forEach((p, i) => {
+    const delay = i * 0.15;
+    const entry = document.createElement('div');
+    entry.className = 'project-entry';
+    entry.style.animationDelay = delay + 's';
+
+    ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+      const c = document.createElement('div');
+      c.className = 'corner ' + pos;
+      entry.appendChild(c);
+    });
+
+    const index = document.createElement('div');
+    index.className = 'project-index';
+    index.textContent = String(i + 1).padStart(2, '0');
+    entry.appendChild(index);
+
+    const body = document.createElement('div');
+    body.className = 'project-body';
+
+    const title = document.createElement('h3');
+    title.className = 'project-title';
+    body.appendChild(title);
+    scrambleReveal(title, p.name, delay * 1000 + 250);
+
+    const desc = document.createElement('p');
+    desc.className = 'project-desc';
+    desc.textContent = p.desc;
+    body.appendChild(desc);
+
+    const meta = document.createElement('div');
+    meta.className = 'project-meta';
+
+    if (p.tags && p.tags.length) {
+      const tags = document.createElement('div');
+      tags.className = 'project-tags';
+      p.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.textContent = t;
+        tags.appendChild(span);
+      });
+      meta.appendChild(tags);
+    }
+
+    if (p.link) {
+      const link = document.createElement('a');
+      link.className = 'project-link';
+      link.href = p.link;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'view repo →';
+      meta.appendChild(link);
+    }
+
+    body.appendChild(meta);
+    entry.appendChild(body);
+    grid.appendChild(entry);
+  });
+}
+
 let terminalRan = false;
 
 function runTerminal() {
@@ -330,6 +530,7 @@ function renderSkillsOutput() {
       cursorLine.className = 't-line';
       cursorLine.innerHTML = '<span class="cursor"></span>';
       body.appendChild(cursorLine);
+      setTimeout(renderProjects, 350);
       return;
     }
 

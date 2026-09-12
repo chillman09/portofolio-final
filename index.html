@@ -25,16 +25,7 @@
 </div>
 <div id="viewCounter"><span class="vc-icon">◉</span> <span id="vcCount">0</span> views</div>
 
-<audio id="bgAudio" src="assets/theme.mp3" loop></audio>
-
-<div id="musicPlayer" style="display:none;">
-  <button class="mp-toggle" id="mpToggle" aria-label="Play or pause music">❚❚</button>
-  <div class="mp-info">
-    <div class="mp-title">theme.mp3</div>
-    <div class="mp-track" id="mpTrack"><div class="mp-track-fill" id="mpFill"></div></div>
-  </div>
-  <div class="mp-time"><span id="mpCurrent">0:00</span> / <span id="mpDuration">0:00</span></div>
-</div>
+<audio id="bgAudio" src="assets/misery.mp3" loop></audio>
 
 <main id="site" style="display:none;">
 
@@ -46,8 +37,30 @@
       </div>
     </div>
     <div class="text-col">
-      <h1 class="name" id="nameText" data-text="卂丂ㄒ卂">卂丂ㄒ卂</h1>
-      <p class="role" id="roleText">building cool stuff 🌐</p>
+      <div class="name-block">
+        <h1 class="name" id="nameText" data-text="卂丂ㄒ卂">卂丂ㄒ卂</h1>
+        <p class="role" id="roleText">building cool stuff 🌐</p>
+
+        <div id="musicPlayer" style="display:none;">
+          <div class="mp-disc" id="mpDisc"><span class="mp-disc-hole"></span></div>
+          <button class="mp-toggle" id="mpToggle" aria-label="Play or pause music"><span class="mp-icon-pause">❚❚</span><span class="mp-icon-play" hidden>▶</span></button>
+          <div class="mp-info">
+            <div class="mp-now"><span class="mp-now-dot"></span>NOW PLAYING</div>
+            <div class="mp-title" id="mpTitle">MISERY<span class="mp-ext">.mp3</span></div>
+            <div class="mp-track" id="mpTrack"><div class="mp-track-fill" id="mpFill"></div></div>
+            <div class="mp-time"><span id="mpCurrent">0:00</span><span class="mp-sep">/</span><span id="mpDuration">0:00</span></div>
+          </div>
+          <div class="mp-eq" id="mpEq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <div class="mp-vol-wrap">
+            <button class="mp-vol-btn" id="mpVolBtn" aria-label="Volume">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="mpVolWave" d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+            </button>
+            <div class="mp-vol-pop" id="mpVolPop">
+              <input type="range" id="mpVolSlider" class="mp-vol-slider" min="0" max="100" value="60" orient="vertical" aria-label="Volume level">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -73,6 +86,11 @@
     <div class="terminal" id="terminal">
       <div class="terminal-body" id="terminalBody"></div>
     </div>
+  </section>
+
+  <section class="section" data-reveal id="projectsSection">
+    <div class="section-head"><span class="path">// projects</span></div>
+    <div class="projects-grid" id="projectsGrid"></div>
   </section>
 
   <footer class="footer">
