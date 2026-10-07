@@ -31,7 +31,7 @@ a { color: inherit; }
 .js .name span { opacity: 0; }
 .entered .name span { animation: resolve 1.5s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * .13s); }
 .name span:nth-child(1) { --i: 0; } .name span:nth-child(2) { --i: 1; }
-.name span:nth-child(3) { --i: 2; } .name span:nth-child(4) { --i: 3; }
+.name span:nth-child(3) { --i: 2; } .name span:nth-child(4) { --i: 3; } .name span:nth-child(5) { --i: 4; }
 @keyframes resolve { from { opacity: 0; filter: blur(16px); transform: translateY(.1em); } to { opacity: 1; filter: blur(0); transform: none; } }
 
 /* Buttons */
@@ -135,7 +135,7 @@ html:not(.js) .enter { display: none; }
 /* Avatar: clipped to a true circle, status dot sits on the ring */
 .avw { position: relative; flex: none; width: 76px; height: 76px; transition: transform .4s cubic-bezier(.2,.7,.2,1); }
 .av { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; clip-path: circle(50%); position: relative; background: var(--deep); }
-.av video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.av video, .av img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .av::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(238,241,250,.9); }
 .avw:hover { transform: scale(1.08) rotate(-4deg); }
 .dot { display: none; position: absolute; right: -2px; bottom: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--night); background: var(--mist); }
