@@ -15,6 +15,7 @@
 <body>
 
 <video id="bg" src="assets/background.mp4" poster="assets/poster.jpg" autoplay muted loop playsinline preload="auto"></video>
+<div class="progress" id="progress"></div>
 <div class="shade"></div>
 <audio id="music" src="assets/misery.mp3" loop></audio>
 
@@ -27,8 +28,8 @@
   <section class="hero wrap">
     <div class="lockup">
       <div class="who fade">
-        <video class="avatar" src="assets/avatar.mp4?v=2" autoplay muted loop playsinline aria-hidden="true"></video>
-        <p class="presence" id="presence" hidden><i></i><span id="presenceText"></span></p>
+        <div class="avw"><div class="av"><video src="assets/avatar.mp4?v=2" autoplay muted loop playsinline aria-hidden="true"></video></div><i class="dot" id="dot"></i></div>
+        <p class="presence" id="presence" hidden></p>
       </div>
       <h1 class="name" aria-label="Asta"><span>A</span><span>s</span><span>t</span><span>a</span></h1>
       <p class="tag fade">Websites, Discord bots, Minecraft servers and automation, built and hosted by me.</p>

@@ -93,8 +93,8 @@ function fetchPresence() {
     .then((d) => {
       const s = d.success && d.data.discord_status;
       if (!s) return;
-      $('presence').dataset.s = s;
-      $('presenceText').textContent = labels[s] || '';
+      $('dot').dataset.s = s;
+      $('presence').textContent = labels[s] || '';
       $('presence').hidden = false;
     })
     .catch(() => {});
@@ -131,3 +131,32 @@ form.addEventListener('submit', async (e) => {
     submit.disabled = false; submit.textContent = 'Send request';
   }
 });
+
+/* ---------- Scroll: progress line, hero drift, dimming video, reveals ---------- */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let queued = false;
+function onScroll() {
+  if (queued) return; queued = true;
+  requestAnimationFrame(() => {
+    const y = scrollY, max = root.scrollHeight - innerHeight;
+    $('progress').style.setProperty('--sp', max > 0 ? y / max : 0);
+    if (!reduce) {
+      root.style.setProperty('--sy', Math.min(y, innerHeight * 1.2));
+      root.style.setProperty('--dim', Math.min(0.5, y / innerHeight * 0.55));
+    }
+    queued = false;
+  });
+}
+addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+if (!reduce && 'IntersectionObserver' in window) {
+  const items = [...document.querySelectorAll('.sec h2, dl > div, .project > *, .sec > div > *')];
+  items.forEach((el) => { el.classList.add('rv'); el.style.setProperty('--i', [...el.parentNode.children].indexOf(el)); });
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in'); io.unobserve(e.target);
+    setTimeout(() => e.target.style.setProperty('--i', 0), 1600); /* hover shouldn't inherit the stagger */
+  }), { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+  items.forEach((el) => io.observe(el));
+}
