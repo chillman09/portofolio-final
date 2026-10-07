@@ -49,9 +49,9 @@ a { color: inherit; }
 
 /* Hero */
 .hero { min-height: 100svh; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding: 110px 0 clamp(28px, 7vh, 64px); }
-.who { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.who { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
 .presence { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--moon); text-shadow: 0 1px 10px rgba(10,17,40,.7); }
-.name { margin: 0; font: 700 clamp(96px, 18vw, 232px)/.86 var(--serif); letter-spacing: -.03em; text-shadow: 0 4px 48px rgba(10,17,40,.45); }
+.name { margin: 0; font: 700 clamp(96px, 18vw, 232px)/.86 var(--serif); letter-spacing: -.03em; text-shadow: 0 4px 48px rgba(10,17,40,.45); margin-bottom: .2em; }
 .name span { display: inline-block; transition: translate .4s cubic-bezier(.2,.7,.2,1), color .3s; }
 .name span:hover { translate: 0 -.07em; color: var(--gold); }
 .tag { margin: 22px 0 0; max-width: 30ch; font-size: clamp(18px, 2vw, 22px); line-height: 1.5; text-shadow: 0 1px 14px rgba(10,17,40,.8); }
@@ -133,12 +133,12 @@ html:not(.js) .enter { display: none; }
 }
 
 /* Avatar: clipped to a true circle, status dot sits on the ring */
-.avw { position: relative; flex: none; width: 76px; height: 76px; transition: transform .4s cubic-bezier(.2,.7,.2,1); }
+.avw { --av: clamp(100px, 8.5vw, 128px); position: relative; flex: none; width: var(--av); height: var(--av); transition: transform .4s cubic-bezier(.2,.7,.2,1); }
 .av { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; clip-path: circle(50%); position: relative; background: var(--deep); }
 .av video, .av img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .av::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(238,241,250,.9); }
 .avw:hover { transform: scale(1.08) rotate(-4deg); }
-.dot { display: none; position: absolute; right: -2px; bottom: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--night); background: var(--mist); }
+.dot { display: none; position: absolute; right: 2px; bottom: 2px; width: 22px; height: 22px; border-radius: 50%; border: 4px solid var(--night); background: var(--mist); }
 .dot[data-s] { display: block; }
 .dot[data-s="online"] { background: #5FD38D; } .dot[data-s="idle"] { background: var(--gold); } .dot[data-s="dnd"] { background: #E5708A; }
 .presence[hidden] { display: none; }
