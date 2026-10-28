@@ -134,8 +134,6 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const prog = $('progress'), dim = $('dim'), lockup = document.querySelector('.lockup');
 const letters = [...document.querySelectorAll('.name span')];
-const marq = [...document.querySelectorAll('.marq i')];
-const secs = [...document.querySelectorAll('.rest .sec')];
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 let target = scrollY, cur = scrollY, last = cur, sv = 0, raf = 0, glide = false;
 
@@ -144,15 +142,11 @@ function render(y, v) {
   prog.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
   if (reduce) return;
   const p = clamp(y / h, 0, 1.4);
-  bg.style.transform = `translate3d(0, ${-y * 0.04}px, 0) scale(${1.04 + p * 0.1})`;
   dim.style.opacity = Math.min(0.55, p * 0.6);
   lockup.style.transform = `translate3d(0, ${-y * 0.16}px, 0)`;
   lockup.style.opacity = clamp(1 - y / (h * 0.75), 0, 1);
   player.style.transform = `translate3d(0, ${-y * 0.1}px, 0)`;
   letters.forEach((l, i) => { l.style.translate = `0 ${-y * (0.03 + i * 0.045)}px`; });
-  const lean = clamp(v * -0.05, -3, 3);
-  secs.forEach((s) => { s.style.transform = `skewY(${lean}deg)`; });
-  marq.forEach((m, k) => { m.style.transform = `translate3d(${(k ? -1400 + y * 0.45 : -y * 0.45) - v * 6 * (k ? -1 : 1)}px, 0, 0)`; });
 }
 
 function tick() {
