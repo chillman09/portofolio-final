@@ -11,25 +11,20 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden || calm) bg.pause(); else bg.play().catch(() => {});
 });
 
-/* ---------- Entry gate (needed so the browser lets the music start) ---------- */
-const gate = $('enter');
-gate.focus();
-gate.addEventListener('click', () => {
-  gate.classList.add('gone');
-  root.classList.add('entered');
-  music.volume = 0;
-  music.play().then(() => { setupEq(); fadeIn(); }).catch(() => setPlaying(false));
-  fetchPresence();
-}, { once: true });
-
+/* ---------- Entry: no gate. The horizon opens on load; sound starts on the first click, tap or key ---------- */
+let started = false;
+setTimeout(() => root.classList.add('entered'), matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1100);
+fetchPresence();
 function fadeIn() {
-  let v = 0;
-  const t = setInterval(() => {
-    v = Math.min(v + 0.05, +$('vol').value / 100);
-    music.volume = v;
-    if (v >= +$('vol').value / 100) clearInterval(t);
-  }, 50);
+  let v = 0; const goal = () => +$('vol').value / 100;
+  const t = setInterval(() => { v = Math.min(v + 0.04, goal()); music.volume = v; if (v >= goal()) clearInterval(t); }, 50);
 }
+function startMusic() {
+  if (started) return; started = true;
+  music.volume = 0;
+  music.play().then(() => { setupEq(); setPlaying(true); fadeIn(); $('hint').hidden = true; }).catch(() => { started = false; });
+}
+['click', 'keydown', 'touchend'].forEach((ev) => addEventListener(ev, (e) => { if (!e.target.closest?.('#pp')) startMusic(); }, { passive: true }));
 
 /* ---------- Music player ---------- */
 const PAUSE = 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z', PLAY = 'M8 5v14l11-7z';
@@ -42,7 +37,9 @@ function setPlaying(on) {
   $('ppIcon').setAttribute('d', on ? PAUSE : PLAY);
   $('pp').setAttribute('aria-label', on ? 'Pause music' : 'Play music');
 }
+setPlaying(false);
 $('pp').addEventListener('click', () => {
+  if (!started) return startMusic();
   if (music.paused) music.play().then(() => setPlaying(true)).catch(() => {});
   else { music.pause(); setPlaying(false); }
 });
@@ -132,23 +129,57 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-/* ---------- Scroll: progress line, hero drift, dimming video, reveals ---------- */
+/* ---------- Scroll: wheel inertia + transform-only motion ---------- */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let queued = false;
-function onScroll() {
-  if (queued) return; queued = true;
-  requestAnimationFrame(() => {
-    const y = scrollY, max = root.scrollHeight - innerHeight;
-    $('progress').style.setProperty('--sp', max > 0 ? y / max : 0);
-    if (!reduce) {
-      root.style.setProperty('--sy', Math.min(y, innerHeight * 1.2));
-      root.style.setProperty('--dim', Math.min(0.5, y / innerHeight * 0.55));
-    }
-    queued = false;
-  });
+const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const prog = $('progress'), dim = $('dim'), lockup = document.querySelector('.lockup');
+const letters = [...document.querySelectorAll('.name span')];
+const marq = [...document.querySelectorAll('.marq i')];
+const secs = [...document.querySelectorAll('.rest .sec')];
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+let target = scrollY, cur = scrollY, last = cur, sv = 0, raf = 0, glide = false;
+
+function render(y, v) {
+  const max = root.scrollHeight - innerHeight, h = innerHeight;
+  prog.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+  if (reduce) return;
+  const p = clamp(y / h, 0, 1.4);
+  bg.style.transform = `translate3d(0, ${-y * 0.04}px, 0) scale(${1.04 + p * 0.1})`;
+  dim.style.opacity = Math.min(0.55, p * 0.6);
+  lockup.style.transform = `translate3d(0, ${-y * 0.16}px, 0)`;
+  lockup.style.opacity = clamp(1 - y / (h * 0.75), 0, 1);
+  player.style.transform = `translate3d(0, ${-y * 0.1}px, 0)`;
+  letters.forEach((l, i) => { l.style.translate = `0 ${-y * (0.03 + i * 0.045)}px`; });
+  const lean = clamp(v * -0.05, -3, 3);
+  secs.forEach((s) => { s.style.transform = `skewY(${lean}deg)`; });
+  marq.forEach((m, k) => { m.style.transform = `translate3d(${(k ? -1400 + y * 0.45 : -y * 0.45) - v * 6 * (k ? -1 : 1)}px, 0, 0)`; });
 }
-addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+
+function tick() {
+  raf = 0;
+  if (glide) {
+    cur += (target - cur) * 0.085;
+    if (Math.abs(target - cur) < 0.4) { cur = target; glide = false; }
+    scrollTo(0, cur);
+  } else cur = scrollY;
+  sv += ((cur - last) - sv) * 0.12; last = cur;
+  render(cur, sv);
+  if (glide || Math.abs(sv) > 0.02) wake();
+}
+const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
+addEventListener('scroll', () => { if (!glide) { target = scrollY; wake(); } }, { passive: true });
+addEventListener('resize', wake);
+
+if (!reduce && fine) {
+  addEventListener('wheel', (e) => {
+    if (e.ctrlKey || dlg.open) return;
+    e.preventDefault();
+    const max = root.scrollHeight - innerHeight;
+    target = clamp(target + e.deltaY * (e.deltaMode === 1 ? 32 : 1), 0, max);
+    glide = true; wake();
+  }, { passive: false });
+}
+wake();
 
 if (!reduce && 'IntersectionObserver' in window) {
   const items = [...document.querySelectorAll('.sec h2, dl > div, .project > *, .sec > div > *')];
@@ -156,7 +187,7 @@ if (!reduce && 'IntersectionObserver' in window) {
   const io = new IntersectionObserver((entries) => entries.forEach((e) => {
     if (!e.isIntersecting) return;
     e.target.classList.add('in'); io.unobserve(e.target);
-    setTimeout(() => e.target.style.setProperty('--i', 0), 1600); /* hover shouldn't inherit the stagger */
+    setTimeout(() => e.target.style.setProperty('--i', 0), 1600);
   }), { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
   items.forEach((el) => io.observe(el));
 }
