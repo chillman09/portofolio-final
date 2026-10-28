@@ -139,7 +139,6 @@ textarea { resize: vertical; min-height: 100px; }
 
 /* Scroll motion is driven from JS with transforms on their own layers (no root custom properties = no page-wide restyle) */
 .progress { transform-origin: 0 50%; transform: scaleX(0); will-change: transform; }
-#bg { will-change: transform; transform: scale(1.04); }
 .dim { position: fixed; inset: 0; z-index: -1; background: var(--night); opacity: 0; pointer-events: none; will-change: opacity; }
 .lockup, .player { will-change: transform, opacity; }
 .name span { will-change: translate; }
@@ -155,12 +154,6 @@ textarea { resize: vertical; min-height: 100px; }
 @keyframes draw { to { transform: scaleX(1); } }
 html:not(.js) .cv, html:not(.js) .hz { display: none; }
 
-/* Marquee band: scrubbed by scroll position and velocity */
-.marq { overflow: hidden; padding: 0 0 70px; }
-.marq div { white-space: nowrap; font: 700 clamp(56px, 11vw, 160px)/1.05 var(--serif); letter-spacing: -.02em; }
-.marq i { display: inline-block; font-style: normal; will-change: transform; }
-.marq .out { color: transparent; -webkit-text-stroke: 1px rgba(238,241,250,.55); }
-.sec { will-change: transform; }
 
 /* Reveals: headings wipe up, rows rise in sequence */
 .rv { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .9s cubic-bezier(.2,.7,.2,1), translate .3s ease, color .3s; transition-delay: calc(var(--i, 0) * 90ms); }
