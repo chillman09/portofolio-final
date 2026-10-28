@@ -17,6 +17,8 @@
 <video id="bg" src="assets/background.mp4" poster="assets/poster.jpg" autoplay muted loop playsinline preload="auto"></video>
 <div class="progress" id="progress"></div>
 <div class="shade"></div>
+<div class="dim" id="dim"></div>
+<div class="cv top-half" aria-hidden="true"></div><div class="cv bot-half" aria-hidden="true"></div><i class="hz" aria-hidden="true"></i>
 <audio id="music" src="assets/misery.mp3" loop></audio>
 
 <header class="top wrap fade">
@@ -46,6 +48,7 @@
         <span class="song">Misery</span>
         <input id="seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="Seek">
         <span class="time"><span id="cur">0:00</span> / <span id="dur">0:00</span></span>
+        <span class="hint" id="hint">Tap anywhere for sound</span>
       </div>
       <div class="eq" id="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="vol">
@@ -56,6 +59,10 @@
   </section>
 
   <div class="rest">
+    <div class="marq" aria-hidden="true">
+      <div><i>Websites ✦ Discord bots ✦ Minecraft ✦ Automation ✦ Websites ✦ Discord bots ✦ Minecraft ✦ Automation ✦ Websites ✦ Discord bots ✦ Minecraft ✦ Automation ✦ </i></div>
+      <div class="out"><i>Built ✦ Hosted ✦ Maintained ✦ Built ✦ Hosted ✦ Maintained ✦ Built ✦ Hosted ✦ Maintained ✦ Built ✦ Hosted ✦ Maintained ✦ Built ✦ Hosted ✦ Maintained ✦ </i></div>
+    </div>
     <section class="wrap sec">
       <h2>What I work with</h2>
       <dl>
@@ -104,8 +111,6 @@
     <p id="hireStatus" role="status"></p>
   </form>
 </dialog>
-
-<button id="enter" class="enter" type="button"><span>Enter</span><small>Music plays when you do.</small></button>
 
 <script src="js/main.js"></script>
 </body>
